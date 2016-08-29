@@ -9,6 +9,7 @@
 
 class Point {
 private:
+
     int _xCord;
     int _yCord;
     std::string _stringRep;
@@ -16,10 +17,12 @@ private:
 public:
     Point();
     Point(int x, int y);
+    Point(const Point &oPnt);
     ~Point();
     std::string toString();
     void set(int x, int y);
 
+    bool operator==(const Point& oPnt);
 };
 
 

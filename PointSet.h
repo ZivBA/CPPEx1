@@ -12,15 +12,33 @@
 class PointSet {
 private:
 
+    int _initialCapacity = 8;
+    int _currentCapacity = 0;
+    int _currentOccupancy = 0;
+    Point pointArray[];
+
+    void increaseCapacity();
+    void decreaseCapacity();
+
+    int contains(const Point &pPoint)const;
+    bool compHelper(const PointSet &oPntSt);
 
 public:
     PointSet();
+    PointSet(int size);
+    PointSet(const PointSet* PntSt);
     ~PointSet();
     std::string toString();
     bool add(const Point &pnt);
+    bool add(int x, int y);
     bool remove(const Point &pnt);
-    int size();
 
+    int size()const;
+    bool operator==(const PointSet& oPntSt);
+    bool operator!=(const PointSet& oPntSt);
+    PointSet * operator-(const PointSet& oPntSt);
+
+    PointSet * operator&(const PointSet& oPntSt);
 };
 
 

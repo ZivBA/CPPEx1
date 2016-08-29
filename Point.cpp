@@ -5,16 +5,18 @@
 #include "Point.h"
 
 Point::Point() {
-    _xCord = nullptr;
-    _yCord = nullptr;
+    _xCord = NULL;
+    _yCord = NULL;
 
 }
 
 Point::Point(int x, int y) {
     set(x,y);
-    _stringRep = "null,null";
 }
 
+Point::Point(const Point &oPnt){
+    set(oPnt._xCord,oPnt._yCord);
+}
 void Point::set(int x, int y) {
     _xCord = x;
     _yCord = y;
@@ -28,4 +30,8 @@ Point::~Point() {
 std::string Point::toString() {
 
     return _stringRep;
+}
+
+bool Point::operator==(const Point &oPnt) {
+    return this->_stringRep.compare(oPnt._stringRep) == 0;
 }
