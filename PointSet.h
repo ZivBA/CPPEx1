@@ -4,7 +4,7 @@
 
 #ifndef EX1_POINTSET_H
 #define EX1_POINTSET_H
-
+#define NOT_FOUND -1
 
 #include <string>
 #include "Point.h"
@@ -12,10 +12,10 @@
 class PointSet {
 private:
 
-    int _initialCapacity = 8;
+    int static const _initialCapacity = 8;
     int _currentCapacity = 0;
     int _currentOccupancy = 0;
-    Point pointArray[];
+    Point *_pointArray;
 
     void increaseCapacity();
     void decreaseCapacity();
@@ -29,7 +29,7 @@ public:
     PointSet(const PointSet* PntSt);
     ~PointSet();
     std::string toString();
-    bool add(const Point &pnt);
+    bool add(Point pnt);
     bool add(int x, int y);
     bool remove(const Point &pnt);
 

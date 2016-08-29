@@ -5,8 +5,6 @@
 #include "Point.h"
 
 Point::Point() {
-    _xCord = NULL;
-    _yCord = NULL;
 
 }
 
@@ -32,6 +30,6 @@ std::string Point::toString() {
     return _stringRep;
 }
 
-bool Point::operator==(const Point &oPnt) {
+bool Point::operator==(const Point &oPnt) const {
     return this->_stringRep.compare(oPnt._stringRep) == 0;
 }
