@@ -22,9 +22,7 @@ public:
     std::string toString();
     void set(int x, int y);
 
-    bool operator==(const Point& oPnt) const;
-
-    Point(Point *pPoint);
+    bool operator==(const Point oPnt) const;
 };
 
 

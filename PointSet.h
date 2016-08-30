@@ -15,13 +15,12 @@ private:
     int static const _initialCapacity = 8;
     int _currentCapacity = 0;
     int _currentOccupancy = 0;
-    Point *_pointArray;
+    Point** _pointArray;
 
     void increaseCapacity();
     void decreaseCapacity();
 
-    int contains(const Point &pPoint)const;
-    bool compHelper(const PointSet &oPntSt);
+    int contains(Point pPoint) const;
 
 public:
     PointSet();
@@ -29,16 +28,16 @@ public:
     PointSet(const PointSet* PntSt);
     ~PointSet();
     std::string toString();
-    bool add(Point pnt);
+    bool add(Point *pnt);
     bool add(int x, int y);
-    bool remove(const Point &pnt);
+    bool remove(const Point *pnt);
 
     int size()const;
-    bool operator==(const PointSet& oPntSt);
-    bool operator!=(const PointSet& oPntSt);
-    PointSet * operator-(const PointSet& oPntSt);
+    bool operator==(const PointSet& oPntSt) const;
+    bool operator!=(const PointSet& oPntSt) const;
+    PointSet operator-(const PointSet& oPntSt) const;
 
-    PointSet * operator&(const PointSet& oPntSt);
+    PointSet operator&(const PointSet oPntSt) const ;
 };
 
 

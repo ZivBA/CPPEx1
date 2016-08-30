@@ -22,7 +22,8 @@ void Point::set(int x, int y) {
 }
 
 Point::~Point() {
-
+    _xCord = 0;
+    _yCord = 0;
 }
 
 std::string Point::toString() {
@@ -30,6 +31,6 @@ std::string Point::toString() {
     return _stringRep;
 }
 
-bool Point::operator==(const Point &oPnt) const {
+bool Point::operator==(const Point oPnt) const {
     return this->_stringRep.compare(oPnt._stringRep) == 0;
 }
