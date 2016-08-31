@@ -9,37 +9,46 @@
 #include <string>
 #include "Point.h"
 
-class PointSet {
+class PointSet
+{
 private:
 
-    int static const _initialCapacity = 8;
-    int _currentCapacity = 0;
-    int _currentOccupancy = 0;
-    Point** _pointArray;
+	int static const _initialCapacity = 8;
+	int _currentCapacity = 0;
+	int _currentOccupancy = 0;
+	Point **_pointArray;
 
-    void increaseCapacity();
-    void decreaseCapacity();
+	void increaseCapacity();
 
-    int contains(Point pPoint) const;
+	void decreaseCapacity();
+
+	int contains(const Point &pPoint) const;
 
 public:
-    PointSet();
-    PointSet(int size);
-    PointSet(const PointSet* PntSt);
-    ~PointSet();
-    std::string toString();
-    bool add(Point *pnt);
-    bool add(int x, int y);
-    bool remove(const Point *pnt);
+	PointSet();
 
-    int size()const;
-    bool operator==(const PointSet& oPntSt) const;
-    bool operator!=(const PointSet& oPntSt) const;
-    PointSet operator-(const PointSet& oPntSt) const;
+	PointSet(int size);
 
-    PointSet operator&(const PointSet oPntSt) const ;
+	PointSet(const PointSet &PntSt);
+
+	~PointSet();
+
+	std::string toString();
+
+	bool add(Point &pnt);
+
+	bool remove(const Point &pnt);
+
+	int size() const;
+
+	bool operator==(const PointSet &oPntSt) const;
+
+	bool operator!=(const PointSet &oPntSt) const;
+
+	PointSet operator-(const PointSet &oPntSt) const;
+
+	PointSet operator&(const PointSet &oPntSt) const;
 };
 
 
 #endif //EX1_POINTSET_H
-
