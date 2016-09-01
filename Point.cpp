@@ -34,13 +34,22 @@ Point::~Point()
 	_stringRep = "";
 }
 
-std::string Point::toString()
+std::string Point::toString() const
 {
-
 	return _stringRep;
 }
 
 bool Point::operator==(const Point *oPnt) const
 {
 	return this->_stringRep.compare(oPnt->_stringRep) == 0;
+}
+
+int Point::get_xCord() const
+{
+	return _xCord;
+}
+
+int Point::get_yCord() const
+{
+	return _yCord;
 }

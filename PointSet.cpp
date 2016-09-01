@@ -58,9 +58,9 @@ std::string PointSet::toString()
 //
 //}
 
-bool PointSet::add(Point &pnt)
+bool PointSet::add(Point const &pnt)
 {
-	if (contains(pnt) != NOT_FOUND)
+	if (contains(pnt) != notFound)
 	{
 		return false;
 	}
@@ -75,7 +75,7 @@ bool PointSet::add(Point &pnt)
 bool PointSet::remove(const Point &pnt)
 {
 	int res = contains(pnt);
-	if (res == NOT_FOUND) return false;
+	if (res == notFound) return false;
 	delete _pointArray[res];
 	_pointArray[res] = _pointArray[_currentOccupancy - 2];
 	_pointArray[_currentOccupancy - 2] = _pointArray[_currentOccupancy - 1];
@@ -103,7 +103,7 @@ int PointSet::contains(const Point &pPoint) const
 			return i;
 		}
 	}
-	return NOT_FOUND;
+	return notFound;
 }
 
 void PointSet::increaseCapacity()
@@ -139,7 +139,7 @@ bool PointSet::operator==(const PointSet &oPntSt) const
 	}
 	for (int i = 0; i < this->size(); i++)
 	{
-		if (oPntSt.contains(*_pointArray[i]) == NOT_FOUND)
+		if (oPntSt.contains(*_pointArray[i]) == notFound)
 		{
 			return false;
 		}
@@ -158,7 +158,7 @@ PointSet PointSet::operator-(const PointSet &oPntSt) const
 	for (int i = 0; i < _currentOccupancy; i++)
 	{
 
-		if (oPntSt.contains(*_pointArray[i]) == NOT_FOUND)
+		if (oPntSt.contains(*_pointArray[i]) == notFound)
 		{
 			newSet.add(*_pointArray[i]);
 		}
@@ -172,10 +172,53 @@ PointSet PointSet::operator&(const PointSet &oPntSt) const
 	for (int i = 0; i < _currentOccupancy; i++)
 	{
 
-		if (oPntSt.contains(*_pointArray[i]) != NOT_FOUND)
+		if (oPntSt.contains(*_pointArray[i]) != notFound)
 		{
 			newSet.add(*_pointArray[i]);
 		}
 	}
 	return newSet;
+}
+
+int PointSet::convexSort()
+{
+	Point **tempArray = new Point *[_currentOccupancy + 1];
+	std::copy(_pointArray, _pointArray + _currentOccupancy, tempArray[1]);
+	int minYpos = 1;
+	for (int i = 2; i < _currentOccupancy + 1; i++)
+	{
+		if (tempArray[i]->get_yCord() < tempArray[1]->get_yCord())
+		{
+			std::swap(tempArray[i], tempArray[1]);
+		}
+	}
+	/*
+	let N           = number of points
+	let points[N+1] = the array of points
+	swap points[1] with the point with the lowest y-coordinate
+	sort points by polar angle with points[1]
+
+# We want points[0] to be a sentinel point that will stop the loop.
+	let points[0] = points[N]
+
+# M will denote the number of points on the convex hull.
+	let M = 1
+	for i = 2 to N:
+# Find next valid point on convex hull.
+	while ccw(points[M-1], points[M], points[i]) <= 0:
+	if M > 1:
+	M -= 1
+# All points are collinear
+	else if i == N:
+	break
+	else
+	i += 1
+
+# Update M and swap points[i] to the correct place.
+	M += 1
+	swap points[M] with points[i]
+	 */
+
+
+	return 0;
 }

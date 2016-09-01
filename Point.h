@@ -21,11 +21,15 @@ public:
 
 	Point(int x, int y);
 
+	int get_xCord() const;
+
+	int get_yCord() const;
+
 	Point(const Point &oPnt);
 
 	~Point();
 
-	std::string toString();
+	std::string toString() const;
 
 	void set(int x, int y);
 

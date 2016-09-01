@@ -5,8 +5,14 @@
 #ifndef EX1_CONVEXHULL_H
 #define EX1_CONVEXHULL_H
 
+#include "PointSet.h"
+#include <string>
 
 class ConvexHull {
+private:
+	PointSet preConvexSet;
+	PointSet postConvex;
+public:
 
 };
 
