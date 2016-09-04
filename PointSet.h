@@ -24,6 +24,8 @@ private:
 
 	int contains(const Point &pPoint) const;
 
+	int ccw(const Point &p1, const Point &p2, const Point &p3);
+
 public:
 	PointSet();
 
@@ -50,7 +52,16 @@ public:
 	PointSet operator&(const PointSet &oPntSt) const;
 
 	int convexSort();
+
+
+	bool static cmp(const Point *a, const Point *b);
+
+
+	void initArrayOfPnts(Point **pPoint);
+
+	void sortMe();
 };
 
+static Point _anchPnt;
 
 #endif //EX1_POINTSET_H

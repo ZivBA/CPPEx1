@@ -3,7 +3,7 @@
 //
 
 #include <string>
-
+#include <math.h>
 #ifndef EX1_POINT_H
 #define EX1_POINT_H
 
@@ -34,6 +34,11 @@ public:
 	void set(int x, int y);
 
 	bool operator==(const Point *oPnt) const;
+
+	int operator*(const Point &p2) const;
+
+	double norm() const;
+
 
 };
 

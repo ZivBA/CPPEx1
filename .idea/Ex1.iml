@@ -9,7 +9,6 @@
       <sourceFolder url="file://$MODULE_DIR$/PointSetBinaryOperations.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/PointSet.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ConvexHull.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/ConvexHull.h" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">

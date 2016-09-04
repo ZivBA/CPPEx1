@@ -2,6 +2,7 @@
 // Created by zivben on 8/28/16.
 //
 
+#include <tgmath.h>
 #include "Point.h"
 
 Point::Point()
@@ -44,6 +45,17 @@ bool Point::operator==(const Point *oPnt) const
 	return this->_stringRep.compare(oPnt->_stringRep) == 0;
 }
 
+
+int Point::operator*(const Point &p2) const
+{
+	return (this->_xCord * p2._xCord + this->_yCord * p2._yCord);
+}
+
+double Point::norm() const
+{
+	return sqrt(((*this) * (*this)));
+}
+
 int Point::get_xCord() const
 {
 	return _xCord;
@@ -53,3 +65,4 @@ int Point::get_yCord() const
 {
 	return _yCord;
 }
+
