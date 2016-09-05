@@ -59,7 +59,7 @@ public:
 	bool static cmp(const Point *a, const Point *b);
 
 
-	void initArrayOfPnts(Point **pPoint);
+	void initArrayOfPnts(Point **pPoint, const int size);
 
 	void sortMe();
 

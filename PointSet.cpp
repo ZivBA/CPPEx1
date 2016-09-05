@@ -15,7 +15,7 @@ PointSet::PointSet(int const size)
 {
 	_pointArray = new Point *[size];
 	_currentCapacity = size;
-	initArrayOfPnts(_pointArray);
+	initArrayOfPnts(_pointArray, _currentCapacity);
 }
 
 PointSet::PointSet(const PointSet &PntSt) : PointSet(PntSt.size())
@@ -108,7 +108,7 @@ void PointSet::increaseCapacity()
 	_currentCapacity = _currentCapacity * 2;
 
 	Point **newArray = new Point *[_currentCapacity];
-	initArrayOfPnts(newArray);
+	initArrayOfPnts(newArray, _currentCapacity);
 
 	std::swap_ranges(_pointArray, _pointArray + _currentOccupancy, newArray);
 
@@ -121,7 +121,7 @@ void PointSet::decreaseCapacity()
 {
 	_currentCapacity = _currentCapacity / 2;
 	Point **newArray = new Point *[_currentCapacity];
-	initArrayOfPnts(newArray);
+	initArrayOfPnts(newArray, _currentCapacity);
 	std::swap_ranges(_pointArray, _pointArray + _currentOccupancy, newArray);
 
 	delete[] _pointArray;
@@ -211,7 +211,7 @@ int PointSet::convexSort()
 	int N = _currentOccupancy;
 	// let tempArray[N+1] = copy of the array of points shifted by 1
 	Point **tempArray = new Point *[N + 1];
-	initArrayOfPnts(tempArray);
+	initArrayOfPnts(tempArray, N + 1);
 	//swap points[0] with the point with the lowest y-coordinate
 	for (int i = 1; i < N; i++)
 	{
@@ -259,7 +259,7 @@ int PointSet::convexSort()
 	_currentOccupancy = M + 1;
 	delete[] _pointArray;
 	_pointArray = new Point *[_currentOccupancy];
-	initArrayOfPnts(_pointArray);
+	initArrayOfPnts(_pointArray, _currentCapacity);
 	std::copy(tempArray + 1, tempArray + _currentOccupancy + 1, _pointArray);
 
 
@@ -282,9 +282,9 @@ int PointSet::ccw(const Point &p1, const Point &p2, const Point &p3)
 	        (p2.get_yCord() - p1.get_yCord()) * (p3.get_xCord() - p1.get_xCord()));
 }
 
-void PointSet::initArrayOfPnts(Point **pPoint)
+void PointSet::initArrayOfPnts(Point **pPoint, const int size)
 {
-	for (int i = 0; i < _currentCapacity; i++)
+	for (int i = 0; i < size; i++)
 	{
 		pPoint[i] = new Point();
 	}
