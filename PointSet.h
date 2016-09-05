@@ -61,7 +61,7 @@ public:
 
 	void initArrayOfPnts(Point **pPoint, const int size);
 
-	void sortMe();
+	void sortPolar();
 
 	void copyToMyArrayFrom(const PointSet &set);
 };

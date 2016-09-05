@@ -35,7 +35,7 @@ int main()
 
 	if (preConvexSet.size() <= MINIMAL_SIZE_FOR_CONVEX)
 	{
-		preConvexSet.sortMe();
+		preConvexSet.sortPolar();
 		std::cout << preConvexSet.toString() << std::endl;
 	} else
 	{

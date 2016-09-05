@@ -11,10 +11,8 @@ PointSet::PointSet() : PointSet(_initialCapacity)
 
 }
 
-PointSet::PointSet(int const size)
+PointSet::PointSet(int const size) : _currentCapacity(size), _pointArray(new Point*[size])
 {
-	_pointArray = new Point *[size];
-	_currentCapacity = size;
 	initArrayOfPnts(_pointArray, _currentCapacity);
 }
 
@@ -26,11 +24,7 @@ PointSet::PointSet(const PointSet &PntSt) : PointSet(PntSt.size())
 PointSet::~PointSet()
 {
 
-	for (int i = 0; i < _currentCapacity; i++)
-	{
-		delete _pointArray[i];
-	}
-	delete _pointArray;
+	delete[] _pointArray;
 
 }
 
@@ -62,7 +56,7 @@ bool PointSet::add(Point const &pnt)
 	{
 		increaseCapacity();
 	}
-	*_pointArray[_currentOccupancy++] = pnt;
+	_pointArray[_currentOccupancy++] = new Point(pnt);
 	return true;
 }
 
@@ -73,8 +67,7 @@ bool PointSet::remove(const Point &pnt)
 	delete _pointArray[res];
 	if (res != _currentOccupancy - 1)
 	{
-		_pointArray[res] = _pointArray[_currentOccupancy - 2];
-		_pointArray[_currentOccupancy - 2] = _pointArray[_currentOccupancy - 1];
+		_pointArray[res] = _pointArray[_currentOccupancy - 1];
 	}
 	_currentOccupancy--;
 	if (_currentOccupancy < _currentCapacity / 2) decreaseCapacity();
@@ -136,12 +129,7 @@ PointSet PointSet::operator=(const PointSet &oPntSt)
 	{
 		return *this;
 	}
-	for (int i = 0; i < _currentCapacity; i++)
-	{
-		delete _pointArray[i];
-	}
-	delete _pointArray;
-
+	delete[] _pointArray;
 	copyToMyArrayFrom(oPntSt);
 
 	return *this;
@@ -228,7 +216,7 @@ int PointSet::convexSort()
 	_anchPnt = *_pointArray[0];
 
 	//sort points by polar angle with points[1]
-	sortMe();
+	sortPolar();
 	std::copy(_pointArray, _pointArray + N, tempArray + 1);
 
 	//We want points[0] to be a sentinel point that will stop the loop.
@@ -256,10 +244,10 @@ int PointSet::convexSort()
 		std::swap(tempArray[M], tempArray[i]);
 	}
 
-	_currentOccupancy = M + 1;
 	delete[] _pointArray;
+	_currentOccupancy = M + 1;
 	_pointArray = new Point *[_currentOccupancy];
-	initArrayOfPnts(_pointArray, _currentCapacity);
+	initArrayOfPnts(_pointArray, _currentOccupancy);
 	std::copy(tempArray + 1, tempArray + _currentOccupancy + 1, _pointArray);
 
 
@@ -290,7 +278,7 @@ void PointSet::initArrayOfPnts(Point **pPoint, const int size)
 	}
 }
 
-void PointSet::sortMe()
+void PointSet::sortPolar()
 {
 	std::sort(_pointArray, (_pointArray + _currentOccupancy - 1), cmp);
 }
