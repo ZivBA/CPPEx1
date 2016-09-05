@@ -66,3 +66,14 @@ int Point::get_yCord() const
 	return _yCord;
 }
 
+Point Point::operator=(const Point &p2)
+{
+	if (this == &p2)
+	{
+		return *this;
+	}
+	set(p2._xCord, p2._yCord);
+	return *this;
+
+}
+

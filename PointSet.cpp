@@ -20,19 +20,18 @@ PointSet::PointSet(int const size)
 
 PointSet::PointSet(const PointSet &PntSt) : PointSet(PntSt.size())
 {
-	for (int i = 0; i < PntSt.size(); i++)
-	{
-		_pointArray[i] = PntSt._pointArray[i];
-	}
+	copyToMyArrayFrom(PntSt);
 }
 
 PointSet::~PointSet()
 {
+
 	for (int i = 0; i < _currentCapacity; i++)
 	{
 		delete _pointArray[i];
 	}
 	delete _pointArray;
+
 }
 
 std::string PointSet::toString()
@@ -131,6 +130,23 @@ void PointSet::decreaseCapacity()
 
 }
 
+PointSet PointSet::operator=(const PointSet &oPntSt)
+{
+	if (this == &oPntSt)
+	{
+		return *this;
+	}
+	for (int i = 0; i < _currentCapacity; i++)
+	{
+		delete _pointArray[i];
+	}
+	delete _pointArray;
+
+	copyToMyArrayFrom(oPntSt);
+
+	return *this;
+}
+
 bool PointSet::operator==(const PointSet &oPntSt) const
 {
 	if (this->size() != oPntSt.size())
@@ -166,6 +182,7 @@ PointSet PointSet::operator-(const PointSet &oPntSt) const
 	return newSet;
 }
 
+
 PointSet PointSet::operator&(const PointSet &oPntSt) const
 {
 	PointSet newSet = PointSet(this->size());
@@ -183,23 +200,26 @@ PointSet PointSet::operator&(const PointSet &oPntSt) const
 
 bool PointSet::cmp(const Point *a, const Point *b)
 {
-	return ((_anchPnt * *a) / _anchPnt.norm() * a->norm()) <
+	return ((_anchPnt * *a) / _anchPnt.norm() * a->norm()) <=
 	       ((_anchPnt * *b) / _anchPnt.norm() * b->norm());
 }
-
 
 int PointSet::convexSort()
 {
 
 	// let N           = number of points
-
+	int N = _currentOccupancy;
 	// let tempArray[N+1] = copy of the array of points shifted by 1
-	Point **tempArray = new Point *[_currentOccupancy + 1];
+	Point **tempArray = new Point *[N + 1];
 	initArrayOfPnts(tempArray);
 	//swap points[0] with the point with the lowest y-coordinate
-	for (int i = 1; i < _currentOccupancy; i++)
+	for (int i = 1; i < N; i++)
 	{
 		if (_pointArray[i]->get_yCord() < _pointArray[0]->get_yCord())
+		{
+			std::swap(_pointArray[i], _pointArray[0]);
+		} else if (_pointArray[i]->get_yCord() == _pointArray[0]->get_yCord() &&
+		           _pointArray[i]->get_xCord() < _pointArray[0]->get_xCord())
 		{
 			std::swap(_pointArray[i], _pointArray[0]);
 		}
@@ -209,16 +229,16 @@ int PointSet::convexSort()
 
 	//sort points by polar angle with points[1]
 	sortMe();
-	std::copy(_pointArray, _pointArray + _currentOccupancy, tempArray);
+	std::copy(_pointArray, _pointArray + N, tempArray + 1);
 
 	//We want points[0] to be a sentinel point that will stop the loop.
-	tempArray[0] = tempArray[_currentOccupancy - 1];
+	tempArray[0] = tempArray[N];
 
 	//M will denote the number of points on the convex hull.
 	int M = 1;
-	for (int i = 2; i < _currentOccupancy; i++)
+	for (int i = 2; i < N; i++)
 	{
-		while (ccw(*tempArray[M - 1], *tempArray[M], *tempArray[M + 1]) <= 0)
+		while (ccw(*tempArray[M - 1], *tempArray[M], *tempArray[i]) >= 0)
 		{
 			if (M > 1)
 			{
@@ -236,11 +256,11 @@ int PointSet::convexSort()
 		std::swap(tempArray[M], tempArray[i]);
 	}
 
-	for (; M < _currentOccupancy; M++)
-	{
-		delete tempArray[M];
-		tempArray[M] = new Point;
-	}
+	_currentOccupancy = M + 1;
+	delete[] _pointArray;
+	_pointArray = new Point *[_currentOccupancy];
+	initArrayOfPnts(_pointArray);
+	std::copy(tempArray + 1, tempArray + _currentOccupancy + 1, _pointArray);
 
 
 	return 0;
@@ -258,8 +278,8 @@ int PointSet::convexSort()
  */
 int PointSet::ccw(const Point &p1, const Point &p2, const Point &p3)
 {
-	return (p2.get_xCord() - p1.get_xCord()) * (p3.get_yCord() - p1.get_yCord()) -
-	       (p2.get_yCord() - p1.get_yCord()) * (p3.get_xCord() - p1.get_xCord());
+	return ((p2.get_xCord() - p1.get_xCord()) * (p3.get_yCord() - p1.get_yCord()) -
+	        (p2.get_yCord() - p1.get_yCord()) * (p3.get_xCord() - p1.get_xCord()));
 }
 
 void PointSet::initArrayOfPnts(Point **pPoint)
@@ -273,4 +293,13 @@ void PointSet::initArrayOfPnts(Point **pPoint)
 void PointSet::sortMe()
 {
 	std::sort(_pointArray, (_pointArray + _currentOccupancy - 1), cmp);
+}
+
+void PointSet::copyToMyArrayFrom(const PointSet &PntSt)
+{
+	for (int i = 0; i < PntSt.size(); i++)
+	{
+		delete _pointArray[i];
+		_pointArray[i] = PntSt._pointArray[i];
+	}
 }

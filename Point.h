@@ -37,6 +37,8 @@ public:
 
 	int operator*(const Point &p2) const;
 
+	Point operator=(const Point &p2);
+
 	double norm() const;
 
 

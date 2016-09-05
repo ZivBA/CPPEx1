@@ -45,6 +45,8 @@ public:
 
 	bool operator==(const PointSet &oPntSt) const;
 
+	PointSet operator=(const PointSet &oPntSt);
+
 	bool operator!=(const PointSet &oPntSt) const;
 
 	PointSet operator-(const PointSet &oPntSt) const;
@@ -60,6 +62,8 @@ public:
 	void initArrayOfPnts(Point **pPoint);
 
 	void sortMe();
+
+	void copyToMyArrayFrom(const PointSet &set);
 };
 
 static Point _anchPnt;

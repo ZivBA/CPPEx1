@@ -21,10 +21,10 @@ int main()
 	while (!std::cin.eof())
 	{
 		std::cin >> line;
-		if (line == "DDDD")
-		{
-			break;
-		}
+//		if (line == "DDDD")
+//		{
+//			break;
+//		}
 		sscanf(line.c_str(), "%i,%i", &coords[0], &coords[1]);
 		tempPointHolder = new Point(coords[0], coords[1]);
 		preConvexSet.add(*tempPointHolder);
@@ -42,6 +42,7 @@ int main()
 		preConvexSet.convexSort();
 	}
 //	postConvex = PointSet(preConvexSet.size());
+	std::cout << preConvexSet.toString() << std::endl;
 
 
 	return 0;
