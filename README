@@ -1,0 +1,43 @@
+###################################################################
+###																###
+###			CPP Ex1 	----	ConvexHull && PointSet			###
+###																###
+###				Ziv Ben-Aharon, ID 036853679					###
+###																###
+###################################################################
+###	Program structure: 											###
+###	My package contains the following six files-				###
+###	1) Point.h-			a class defining a "point" on the 		###
+###						cartesian plane (x,y coord pair)		###
+###	2) Point.CPP-		the code for the Point class			###
+###	3) PointSet.h-		a class defining a mathmatical "set":	###
+###						an arbitrary group of points with no	###
+###						repetitions, supporting adding and 		###
+###						removing of points, as well as sorting	###
+###						by polar angle or descending x,y order.	###
+###	4) PointSet.CPP-	the code for the PointSet class.		###
+###	5) PointSetBinaryOperations.CPP-							###
+###						a tiny POC program that shows the usage	###
+###						of the various PointSet operators.		###
+###	6) ConvexHull.CPP-	this program acceptes a "\n" seperated	###
+###						list of (x,y) pairs, and outputs the 	###
+###						convex hull of that set. input stops 	###
+###						when the ^D (EOF) is read from stdin.	###
+###																###
+###																###
+###																###
+###	Some more about the program:								###
+### I had chosen to implement the Graham-Scan algorithm exactly	###
+### as it appears in WikiPedia. in order to implement sorting 	###
+### by polar angle, I chose to implment a dot-product for the 	###
+### Point class (overloading the * operator) and a "norm" 		###
+### method so i could calculate the angle between two points 	###
+### in the comparator.											###
+### since the Convex Hull of a set, is by definition a property ###
+### of the set, I chose to implement all logic within the 		###
+###	PointSet class, such that for a given set, one can call the ###
+### member function "PointSet::convexSort()" which returns a 	###
+### reference to a new set holding only the edge of the set.	###
+### 															###
+###################################################################
+###################################################################
