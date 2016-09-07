@@ -66,8 +66,8 @@ int main()
 	 * test the - operator (and implicitly, the copy constructor.)  set 1 contains all the points of
 	 * set 0, so the operator must return an empty set. if the size of the returned set is not 0 - error.
 	 */
-	PointSet min = setsArr[0] - setsArr[1];
-	if (min.size() != 0)
+	PointSet min = setsArr[1] - setsArr[0];
+	if (min.size() != 1)
 	{
 		std::cout << "ERROR: Fail test Minus" << std::endl;
 		return 1;

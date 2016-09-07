@@ -12,7 +12,7 @@ int main()
 {
 
 	PointSet preConvexSet = PointSet();
-	PointSet postConvex;
+	PointSet *postConvex;
 	std::string line;
 
 	int coords[2] = {0, 0};
@@ -21,10 +21,14 @@ int main()
 	while (!std::cin.eof())
 	{
 		std::cin >> line;
-//		if (line == "DDDD")
-//		{
-//			break;
-//		}
+		if (line == "DDDD")
+		{
+			break;
+		}
+		if (line == "")
+		{
+			continue;
+		}
 		sscanf(line.c_str(), "%i,%i", &coords[0], &coords[1]);
 		tempPointHolder = new Point(coords[0], coords[1]);
 		preConvexSet.add(*tempPointHolder);
@@ -32,17 +36,15 @@ int main()
 		line = "";
 
 	}
-
 	if (preConvexSet.size() <= MINIMAL_SIZE_FOR_CONVEX)
 	{
-		preConvexSet.sortMe();
-		std::cout << preConvexSet.toString() << std::endl;
+		postConvex = &preConvexSet;
 	} else
 	{
-		preConvexSet.convexSort();
+		postConvex = preConvexSet.convexSort();
 	}
-//	postConvex = PointSet(preConvexSet.size());
-	std::cout << preConvexSet.toString() << std::endl;
+	postConvex->sortMe();
+	std::cout << "result\n" << postConvex->toString();
 
 
 	return 0;

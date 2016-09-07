@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "PointSet.h"
 
+
 PointSet::PointSet() : PointSet(_initialCapacity)
 {
 
@@ -18,9 +19,9 @@ PointSet::PointSet(int const size)
 	initArrayOfPnts(_pointArray, _currentCapacity);
 }
 
-PointSet::PointSet(const PointSet &PntSt) : PointSet(PntSt.size())
+PointSet::PointSet(const PointSet &oPntSet) : PointSet(oPntSet.size())
 {
-	copyToMyArrayFrom(PntSt);
+	copyToMyArrayFrom(oPntSet);
 }
 
 PointSet::~PointSet()
@@ -198,73 +199,25 @@ PointSet PointSet::operator&(const PointSet &oPntSt) const
 }
 
 
-bool PointSet::cmp(const Point *a, const Point *b)
-{
-	return ((_anchPnt * *a) / _anchPnt.norm() * a->norm()) <=
-	       ((_anchPnt * *b) / _anchPnt.norm() * b->norm());
-}
-
-int PointSet::convexSort()
+bool PointSet::polarAngleComparator(const Point *a, const Point *b)
 {
 
-	// let N           = number of points
-	int N = _currentOccupancy;
-	// let tempArray[N+1] = copy of the array of points shifted by 1
-	Point **tempArray = new Point *[N + 1];
-	initArrayOfPnts(tempArray, N + 1);
-	//swap points[0] with the point with the lowest y-coordinate
-	for (int i = 1; i < N; i++)
-	{
-		if (_pointArray[i]->get_yCord() < _pointArray[0]->get_yCord())
-		{
-			std::swap(_pointArray[i], _pointArray[0]);
-		} else if (_pointArray[i]->get_yCord() == _pointArray[0]->get_yCord() &&
-		           _pointArray[i]->get_xCord() < _pointArray[0]->get_xCord())
-		{
-			std::swap(_pointArray[i], _pointArray[0]);
-		}
-	}
-
-	_anchPnt = *_pointArray[0];
-
-	//sort points by polar angle with points[1]
-	sortMe();
-	std::copy(_pointArray, _pointArray + N, tempArray + 1);
-
-	//We want points[0] to be a sentinel point that will stop the loop.
-	tempArray[0] = tempArray[N];
-
-	//M will denote the number of points on the convex hull.
-	int M = 1;
-	for (int i = 2; i < N; i++)
-	{
-		while (ccw(*tempArray[M - 1], *tempArray[M], *tempArray[i]) >= 0)
-		{
-			if (M > 1)
-			{
-				M--;
-			} else if (i == _currentOccupancy)
-			{
-				break;
-			} else
-			{
-				i++;
-			}
-		}
-		M++;
-
-		std::swap(tempArray[M], tempArray[i]);
-	}
-
-	_currentOccupancy = M + 1;
-	delete[] _pointArray;
-	_pointArray = new Point *[_currentOccupancy];
-	initArrayOfPnts(_pointArray, _currentCapacity);
-	std::copy(tempArray + 1, tempArray + _currentOccupancy + 1, _pointArray);
-
-
-	return 0;
+	int order = ccw(_anchPnt, *a, *b);
+	return order == 0 ? sqrDist(&_anchPnt, a) < sqrDist(&_anchPnt, b) : order < 0;
 }
+
+bool PointSet::xyComparator(const Point *a, const Point *b)
+{
+	return a->get_xCord() < b->get_xCord() ? true :
+	       a->get_xCord() == b->get_xCord() ? a->get_yCord() < b->get_yCord() : false;
+}
+
+int PointSet::sqrDist(const Point *a, const Point *b)
+{
+	int dx = a->get_xCord() - b->get_xCord(), dy = a->get_yCord() - b->get_yCord();
+	return dx * dx + dy * dy;
+}
+
 
 /**
  * copied CCW code from WIKI:
@@ -278,8 +231,71 @@ int PointSet::convexSort()
  */
 int PointSet::ccw(const Point &p1, const Point &p2, const Point &p3)
 {
-	return ((p2.get_xCord() - p1.get_xCord()) * (p3.get_yCord() - p1.get_yCord()) -
-	        (p2.get_yCord() - p1.get_yCord()) * (p3.get_xCord() - p1.get_xCord()));
+	return ((p2.get_yCord() - p1.get_yCord()) * (p3.get_xCord() - p1.get_xCord()) -
+	        (p2.get_xCord() - p1.get_xCord()) * (p3.get_yCord() - p1.get_yCord()));
+
+
+}
+
+PointSet *PointSet::convexSort()
+{
+	//let N = number of points:
+	int N = _currentOccupancy;
+	//let points[N+1] = the array of points.
+	Point **points = new Point *[N + 1];
+	std::copy(_pointArray, _pointArray + N, points + 1);
+	//swap points[1] with the point with lowest y-coordinate;
+	for (int i = 2; i < N + 1; i++)
+	{
+		if (points[i]->get_yCord() < points[1]->get_yCord())
+		{
+			std::swap(points[i], points[1]);
+		} else if (points[i]->get_yCord() == points[1]->get_yCord())
+		{
+			if (points[i]->get_xCord() < points[1]->get_xCord())
+			{
+				std::swap(points[i], points[1]);
+
+			}
+		}
+	}
+	//sort points by polar angle with points[1]
+	_anchPnt = *points[1];
+	std::sort(points + 1, points + N + 1, polarAngleComparator);
+	// We want points[0] to be a sentinel point that will stop the loop.
+	points[0] = points[N];
+
+	//M will denote the number of points on the convex hull.
+
+	int M = 1;
+	for (int i = 2; i <= N; i++)
+	{
+		while (ccw(*points[M - 1], *points[M], *points[i]) >= 0)
+		{
+			if (M > 1)
+			{
+				M--;
+			} else if (i == N)
+			{
+				break;
+			} else
+			{
+				i++;
+			}
+		}
+		M++;
+		std::swap(points[i], points[M]);
+	}
+
+	PointSet *newSet = new PointSet(M);
+	for (int i = 0; i <= M; i++)
+	{
+		newSet->add(*points[i]);
+	}
+	delete[] points;
+	return newSet;
+
+
 }
 
 void PointSet::initArrayOfPnts(Point **pPoint, const int size)
@@ -292,7 +308,7 @@ void PointSet::initArrayOfPnts(Point **pPoint, const int size)
 
 void PointSet::sortMe()
 {
-	std::sort(_pointArray, (_pointArray + _currentOccupancy - 1), cmp);
+	std::sort(_pointArray, (_pointArray + _currentOccupancy), xyComparator);
 }
 
 void PointSet::copyToMyArrayFrom(const PointSet &PntSt)
