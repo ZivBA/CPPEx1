@@ -55,7 +55,20 @@ private:
 	 */
 	static int ccw(const Point &p1, const Point &p2, const Point &p3);
 
+	/**
+	 * returns the distance between two points;
+	 * @param a first point
+	 * @param b second point
+	 * @return an integer value of the distance between the points.
+	 */
 	static int sqrDist(const Point *a, const Point *b);
+
+	/**
+	 *
+	 * @param set
+	 */
+//	void copyToMyArrayFrom(const PointSet &set);
+
 
 public:
 	/**
@@ -163,13 +176,18 @@ public:
 	bool static polarAngleComparator(const Point *a, const Point *b);
 
 
+	/**
+	 * a comparator used to sort the set by x coords (first criteria), then y (second criteria)
+	 * @param a first point to compare
+	 * @param b second point to compare
+	 * @return ture iff a.x < b.x or (a.x == b.x && a.y<b.y)
+	 */
 	bool static xyComparator(const Point *a, const Point *b);
 
 	void initArrayOfPnts(Point **pPoint, const int size);
 
-	void sortMe();
+	void sortXY();
 
-	void copyToMyArrayFrom(const PointSet &set);
 };
 
 static Point _anchPnt;

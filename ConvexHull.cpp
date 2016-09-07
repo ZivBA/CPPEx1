@@ -32,19 +32,20 @@ int main()
 		sscanf(line.c_str(), "%i,%i", &coords[0], &coords[1]);
 		tempPointHolder = new Point(coords[0], coords[1]);
 		preConvexSet.add(*tempPointHolder);
-
+		delete tempPointHolder;
 		line = "";
 
 	}
-	if (preConvexSet.size() <= MINIMAL_SIZE_FOR_CONVEX)
+	if (preConvexSet.size() < MINIMAL_SIZE_FOR_CONVEX)
 	{
 		postConvex = &preConvexSet;
 	} else
 	{
 		postConvex = preConvexSet.convexSort();
 	}
-	postConvex->sortMe();
+	postConvex->sortXY();
 	std::cout << "result\n" << postConvex->toString();
+	delete postConvex;
 
 
 	return 0;

@@ -21,7 +21,7 @@ PointSet::PointSet(int const size)
 
 PointSet::PointSet(const PointSet &oPntSet) : PointSet(oPntSet.size())
 {
-	copyToMyArrayFrom(oPntSet);
+	*this = oPntSet;
 }
 
 PointSet::~PointSet()
@@ -31,7 +31,7 @@ PointSet::~PointSet()
 	{
 		delete _pointArray[i];
 	}
-	delete _pointArray;
+	delete[] _pointArray;
 
 }
 
@@ -47,11 +47,6 @@ std::string PointSet::toString()
 	return ss.str();
 }
 
-//bool PointSet::add(int x, int y) {
-//    Point* pnt = new Point(x, y);
-//    add(pnt);
-//
-//}
 
 bool PointSet::add(Point const &pnt)
 {
@@ -63,7 +58,7 @@ bool PointSet::add(Point const &pnt)
 	{
 		increaseCapacity();
 	}
-	*_pointArray[_currentOccupancy++] = pnt;
+	_pointArray[_currentOccupancy++] = new Point(pnt);
 	return true;
 }
 
@@ -137,13 +132,11 @@ PointSet PointSet::operator=(const PointSet &oPntSt)
 	{
 		return *this;
 	}
-	for (int i = 0; i < _currentCapacity; i++)
+	for (int i = 0; i < oPntSt.size(); i++)
 	{
 		delete _pointArray[i];
+		*_pointArray[i] = *oPntSt._pointArray[i];
 	}
-	delete _pointArray;
-
-	copyToMyArrayFrom(oPntSt);
 
 	return *this;
 }
@@ -156,7 +149,7 @@ bool PointSet::operator==(const PointSet &oPntSt) const
 	}
 	for (int i = 0; i < this->size(); i++)
 	{
-		if (oPntSt.contains(*_pointArray[i]) == notFound)
+		if (_pointArray[i] != nullptr && oPntSt.contains(*_pointArray[i]) == notFound)
 		{
 			return false;
 		}
@@ -175,7 +168,7 @@ PointSet PointSet::operator-(const PointSet &oPntSt) const
 	for (int i = 0; i < _currentOccupancy; i++)
 	{
 
-		if (oPntSt.contains(*_pointArray[i]) == notFound)
+		if (_pointArray[i] != nullptr && oPntSt.contains(*_pointArray[i]) == notFound)
 		{
 			newSet.add(*_pointArray[i]);
 		}
@@ -237,6 +230,52 @@ int PointSet::ccw(const Point &p1, const Point &p2, const Point &p3)
 
 }
 
+/**
+ * the convexhull algorithm as it appears in:
+ * https://en.wikipedia.org/wiki/Graham_scan
+ * The first step in this algorithm is to find the point with the lowest y-coordinate. If the
+ * lowest y-coordinate exists in more than one point in the set, the point with the lowest
+ * x-coordinate out of the candidates should be chosen. Call this point P. This step takes O(n),
+ * where n is the number of points in question.
+ * Next, the set of points must be sorted in increasing order of the angle they and the point P make
+ * with the x-axis. Any general-purpose sorting algorithm is appropriate for this, for example
+ * heapsort (which is O(n log n)).
+ * Sorting in order of angle does not require computing the angle. It is possible to use any
+ * function  of the angle which is monotonic in the interval {\displaystyle [0,\pi )} [0,\pi ) .
+ * The cosine is easily computed using the dot product, or the slope of the line may be used. If
+ * numeric precision is at a stake, the comparison function used by the sorting algorithm can use
+ * the sign of the cross product to determine relative angles.
+ * The algorithm proceeds by considering each of the points in the sorted array in sequence.  For
+ * each point, it is first determined whether traveling from the two points immediately preceding
+ * this point constitutes making a left turn or a right turn. If a right turn, the second-to-last
+ * point is not part of the convex hull, and lies 'inside' it. The same determination is then made
+ * for the set of the latest point and the two points that immediately precede the point found to
+ * have been inside the hull, and is repeated until a "left turn" set is encountered, at which
+ * point  the algorithm moves on to the next point in the set of points in the sorted array minus
+ * any  points that were found to be inside the hull; there is no need to consider these points
+ * again.  (If at any stage the three points are collinear, one may opt either to discard or to
+ * report  it, since in some applications it is required to find all points on the boundary of the
+ * convex hull.)
+ * Again, determining whether three points constitute a "left turn" or a "right turn" does not
+ * require  computing the actual angle between the two line segments, and can actually be achieved
+ * with simple arithmetic only. For three points  P_{1}=(x_{1},y_{1}), P_{2}=(x_{2},y_{2}) and
+ * P_{3}=(x_{3},y_{3}), simply compute the z-coordinate of the cross product of the two vectors
+ * {P_{1}P_{2}} and  {P_{1}P_{3}}, which is given by the expression  (x_{2}-x_{1})(y_{3}-y_{1})-
+ * (y_{2}-y_{1})(x_{3}-x_{1}). If the result is 0, the points are collinear; if it is positive,
+ * the three points constitute a "left turn" or counter-clockwise orientation, otherwise a "right
+ * turn" or clockwise orientation (for counter-clockwise numbered points).
+ * This process will eventually return to the point at which it started, at which point the
+ * algorithm  is completed and the stack now contains the points on the convex hull in
+ * counterclockwise  order.
+ * Sorting the points has time complexity O(n log n). While it may seem that the time complexity
+ * of the loop is O(n^2), because for each point it goes back to check if any of the previous
+ * points make a "right turn", it is actually O(n), because each point is considered at most twice
+ * in some sense. Each point can appear only once as a point (x_2,y_2) in a "left turn" (because
+ * the algorithm advances to the next point (x_3,y_3) after that), and as a point (x_2,y_2) in a
+ * "right turn" (because the point (x_2,y_2) is removed). The overall time complexity is therefore
+ * O(n log n), since the time to sort dominates the time to actually compute the convex hull.
+ * @return a new PointSet with just the hull points.
+ */
 PointSet *PointSet::convexSort()
 {
 	//let N = number of points:
@@ -302,20 +341,20 @@ void PointSet::initArrayOfPnts(Point **pPoint, const int size)
 {
 	for (int i = 0; i < size; i++)
 	{
-		pPoint[i] = new Point();
+		pPoint[i] = nullptr;
 	}
 }
 
-void PointSet::sortMe()
+void PointSet::sortXY()
 {
 	std::sort(_pointArray, (_pointArray + _currentOccupancy), xyComparator);
 }
 
-void PointSet::copyToMyArrayFrom(const PointSet &PntSt)
-{
-	for (int i = 0; i < PntSt.size(); i++)
-	{
-		delete _pointArray[i];
-		_pointArray[i] = PntSt._pointArray[i];
-	}
-}
+//void PointSet::copyToMyArrayFrom(const PointSet &PntSt)
+//{
+//	for (int i = 0; i < PntSt.size(); i++)
+//	{
+//		delete _pointArray[i];
+//		_pointArray[i] = PntSt._pointArray[i];
+//	}
+//}
