@@ -64,10 +64,11 @@ private:
 	static int sqrDist(const Point *a, const Point *b);
 
 	/**
-	 *
-	 * @param set
+	 * simple loop to initialize an array with nullptr.
+	 * @param pPoint the array to initialize
+	 * @param size the size of the array.
 	 */
-//	void copyToMyArrayFrom(const PointSet &set);
+	void initArrayOfPnts(Point **pPoint, const int size);
 
 
 public:
@@ -169,6 +170,7 @@ public:
 
 	/**
 	 * a comparator used to sort the set by poloar angle from an anchor point.
+	 * one MUST set the anchorpoint before using.
 	 * @param a first point to compare
 	 * @param b second point to compare
 	 * @return false iff point a has a larger reference angle than point b.
@@ -184,12 +186,18 @@ public:
 	 */
 	bool static xyComparator(const Point *a, const Point *b);
 
-	void initArrayOfPnts(Point **pPoint, const int size);
-
+	/**
+	 * if one wants his pointset sorted, say, for printing, then this is the way to go.
+	 */
 	void sortXY();
 
 };
 
+/**
+ * this static point is the anchor point when calculating a convex hull.
+ * it is only used by the convexSort method, but has to be set static so it could be used by the
+ * static comparator "polarAngleComparator"
+ */
 static Point _anchPnt;
 
 #endif //EX1_POINTSET_H

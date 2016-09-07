@@ -349,12 +349,3 @@ void PointSet::sortXY()
 {
 	std::sort(_pointArray, (_pointArray + _currentOccupancy), xyComparator);
 }
-
-//void PointSet::copyToMyArrayFrom(const PointSet &PntSt)
-//{
-//	for (int i = 0; i < PntSt.size(); i++)
-//	{
-//		delete _pointArray[i];
-//		_pointArray[i] = PntSt._pointArray[i];
-//	}
-//}
