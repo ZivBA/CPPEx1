@@ -6,12 +6,20 @@
 #include <algorithm>
 #include "PointSet.h"
 
-
+/**
+ * default constructor creating the backing array in default size.
+ * @return pointer to the new PointSet.
+ */
 PointSet::PointSet() : PointSet(_initialCapacity)
 {
 
 }
 
+/**
+ * constructor accepting size argument, creates a new set with the backing array of size "size".
+ * @param size size of array to create.
+ * @return pointer to new PointSet.
+ */
 PointSet::PointSet(int const size)
 {
 	_pointArray = new Point *[size];
@@ -19,11 +27,20 @@ PointSet::PointSet(int const size)
 	initArrayOfPnts(_pointArray, _currentCapacity);
 }
 
+/**
+ * copy constructor.
+ * @param oPntSet the other pointSet to copy from
+ * @return a pointer to a new PointSet holding all the points of the other pointset.
+ */
 PointSet::PointSet(const PointSet &oPntSet) : PointSet(oPntSet.size())
 {
 	*this = oPntSet;
 }
 
+/**
+ * default destructor.
+ * deletes[] the backing array.
+ */
 PointSet::~PointSet()
 {
 
@@ -35,6 +52,11 @@ PointSet::~PointSet()
 
 }
 
+/**
+ * textual representation of the set.
+ * @return a string representing all the points in the set by insertion order
+ * (as long as no "remove" calls were made on the set or other sorting calls were made).
+ */
 std::string PointSet::toString()
 {
 	std::stringstream ss;
@@ -47,7 +69,11 @@ std::string PointSet::toString()
 	return ss.str();
 }
 
-
+/**
+ * adds a point to the set iff no other points of the same coordinates exist.
+ * @param pnt reference to the point being inserted.
+ * @return sucess ? true : false;
+ */
 bool PointSet::add(Point const &pnt)
 {
 	if (contains(pnt) != notFound)
@@ -62,6 +88,13 @@ bool PointSet::add(Point const &pnt)
 	return true;
 }
 
+
+/**
+ * removes a point from the set iff a point of the same coordinates exists in it.
+ * @param pnt reference to the removal candidate point.
+ * @return sucess ? true : false;
+ */
+
 bool PointSet::remove(const Point &pnt)
 {
 	int res = contains(pnt);
@@ -69,8 +102,7 @@ bool PointSet::remove(const Point &pnt)
 	delete _pointArray[res];
 	if (res != _currentOccupancy - 1)
 	{
-		_pointArray[res] = _pointArray[_currentOccupancy - 2];
-		_pointArray[_currentOccupancy - 2] = _pointArray[_currentOccupancy - 1];
+		_pointArray[res] = _pointArray[_currentOccupancy - 1];
 	}
 	_currentOccupancy--;
 	if (_currentOccupancy < _currentCapacity / 2) decreaseCapacity();
@@ -79,11 +111,20 @@ bool PointSet::remove(const Point &pnt)
 
 }
 
+/**
+ * the number of points in the set.
+ * @return number of points in the set.
+ */
 int PointSet::size() const
 {
 	return _currentOccupancy;
 }
 
+/**
+ * checks if a point is currently in the set, returns it's index if found or "notFound" else.
+ * @param pPoint point to search for.
+ * @return index of the point in the backing array or "notFound" flag (-1);
+ */
 int PointSet::contains(const Point &pPoint) const
 {
 	for (int i = 0; i < _currentOccupancy; i++)
@@ -99,6 +140,10 @@ int PointSet::contains(const Point &pPoint) const
 	return notFound;
 }
 
+/**
+ * private method used for dynamic resizing of the backing array. doubles the capacity of the
+ * set and copies the point pointers from the current array to the new one.
+ */
 void PointSet::increaseCapacity()
 {
 	_currentCapacity = _currentCapacity * 2;
@@ -113,6 +158,10 @@ void PointSet::increaseCapacity()
 
 }
 
+/**
+ * private method used for dynamic resizing of the backing array. halves the capacity of the
+ * set and copies the point pointers from the current array to the new one.
+ */
 void PointSet::decreaseCapacity()
 {
 	_currentCapacity = _currentCapacity / 2;
@@ -126,6 +175,12 @@ void PointSet::decreaseCapacity()
 
 }
 
+/**
+ * asignment operator overload, used to ensure proper copy constructor and asignments.
+ * @param oPntSt the RHS pointset being asigned to "this" pointset.
+ * @return pointer to "this" pointset after all points were removed and all those from the
+ * other pointset were copied in.
+ */
 PointSet PointSet::operator=(const PointSet &oPntSt)
 {
 	if (this == &oPntSt)
@@ -141,6 +196,11 @@ PointSet PointSet::operator=(const PointSet &oPntSt)
 	return *this;
 }
 
+/**
+ * equality operator overload
+ * @param oPntSt the RHS pointset with which "this" pointeset is being compared.
+ * @return true iff "this" pointset holds exactly the same points as "that" one.
+ */
 bool PointSet::operator==(const PointSet &oPntSt) const
 {
 	if (this->size() != oPntSt.size())
@@ -157,11 +217,21 @@ bool PointSet::operator==(const PointSet &oPntSt) const
 	return true;
 }
 
+/**
+ * inequality operator overload
+ * @param oPntSt the RHS pointset being compared with
+ * @return true iff this pointset is not == other pointset.
+ */
 bool PointSet::operator!=(const PointSet &oPntSt) const
 {
 	return !operator==(oPntSt);
 }
 
+/**
+ * subtraction operator overload.
+ * @param oPntSt RHS pointset to be "substracted" from this one.
+ * @return a new pointset holding all points in "this" pointset that are not in "other" pointset
+ */
 PointSet PointSet::operator-(const PointSet &oPntSt) const
 {
 	PointSet newSet = PointSet(this->size());
@@ -176,7 +246,11 @@ PointSet PointSet::operator-(const PointSet &oPntSt) const
 	return newSet;
 }
 
-
+/**
+ * intersection of sets
+ * @param oPntSt the RHS pointset to intersect with "this"
+ * @return a new PointSet holding all the points in "this" set that *are* in the "other" set.
+ */
 PointSet PointSet::operator&(const PointSet &oPntSt) const
 {
 	PointSet newSet = PointSet(this->size());
@@ -191,7 +265,13 @@ PointSet PointSet::operator&(const PointSet &oPntSt) const
 	return newSet;
 }
 
-
+/**
+ * a comparator used to sort the set by poloar angle from an anchor point.
+ * one MUST set the anchorpoint before using.
+ * @param a first point to compare
+ * @param b second point to compare
+ * @return false iff point a has a larger reference angle than point b.
+ */
 bool PointSet::polarAngleComparator(const Point *a, const Point *b)
 {
 
@@ -199,12 +279,25 @@ bool PointSet::polarAngleComparator(const Point *a, const Point *b)
 	return order == 0 ? sqrDist(&_anchPnt, a) < sqrDist(&_anchPnt, b) : order < 0;
 }
 
+/**
+ * a comparator used to sort the set by x coords (first criteria), then y (second criteria)
+ * @param a first point to compare
+ * @param b second point to compare
+ * @return ture iff a.x < b.x or (a.x == b.x && a.y<b.y)
+ */
+
 bool PointSet::xyComparator(const Point *a, const Point *b)
 {
 	return a->get_xCord() < b->get_xCord() ? true :
 	       a->get_xCord() == b->get_xCord() ? a->get_yCord() < b->get_yCord() : false;
 }
 
+/**
+ * returns the distance between two points;
+ * @param a first point
+ * @param b second point
+ * @return an integer value of the distance between the points.
+ */
 int PointSet::sqrDist(const Point *a, const Point *b)
 {
 	int dx = a->get_xCord() - b->get_xCord(), dy = a->get_yCord() - b->get_yCord();
@@ -213,15 +306,14 @@ int PointSet::sqrDist(const Point *a, const Point *b)
 
 
 /**
- * copied CCW code from WIKI:
- * Three points are a counter-clockwise turn if ccw > 0, clockwise if
- *	ccw < 0, and collinear if ccw = 0 because ccw is a determinant that
- *	gives twice the signed  area of the triangle formed by p1, p2 and p3.
- * @param p1 first point
- * @param p2 second point
- * @param p3 third point
- * @return sign of CCW of three points.
- */
+ * checks if a third point (p3) is a clockwise or counter-clockwise turn from the two
+* preceding points (p1, p2). used for the graham-scan algorithm.
+* @param p1 input point 1
+* @param p2 input point 2
+* @param p3 input point 3
+* @return an integer: Three points are a counter-clockwise turn if ccw > 0, clockwise if
+*	ccw < 0, and collinear if ccw = 0
+*/
 int PointSet::ccw(const Point &p1, const Point &p2, const Point &p3)
 {
 	return ((p2.get_yCord() - p1.get_yCord()) * (p3.get_xCord() - p1.get_xCord()) -
@@ -337,6 +429,11 @@ PointSet *PointSet::convexSort()
 
 }
 
+/**
+ * simple loop to initialize an array with nullptr.
+ * @param pPoint the array to initialize
+ * @param size the size of the array.
+ */
 void PointSet::initArrayOfPnts(Point **pPoint, const int size)
 {
 	for (int i = 0; i < size; i++)
@@ -345,6 +442,9 @@ void PointSet::initArrayOfPnts(Point **pPoint, const int size)
 	}
 }
 
+/**
+ * if one wants his pointset sorted, say, for printing, then this is the way to go.
+ */
 void PointSet::sortXY()
 {
 	std::sort(_pointArray, (_pointArray + _currentOccupancy), xyComparator);
