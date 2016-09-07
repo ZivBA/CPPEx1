@@ -39,6 +39,11 @@ public:
 	 * @return
 	 */
 	int get_xCord() const;
+
+	/**
+	 * getters for x and y coordinates.
+	 * @return
+	 */
 	int get_yCord() const;
 
 	/**
