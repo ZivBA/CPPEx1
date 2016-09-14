@@ -29,20 +29,20 @@ private:
 	 * private method used for dynamic resizing of the backing array. doubles the capacity of the
 	 * set and copies the point pointers from the current array to the new one.
 	 */
-	void increaseCapacity();
+	void _increaseCapacity();
 
 	/**
 	 * private method used for dynamic resizing of the backing array. halves the capacity of the
 	 * set and copies the point pointers from the current array to the new one.
 	 */
-	void decreaseCapacity();
+	void _decreaseCapacity();
 
 	/**
 	 * checks if a point is currently in the set, returns it's index if found or "notFound" else.
 	 * @param pPoint point to search for.
 	 * @return index of the point in the backing array or "notFound" flag (-1);
 	 */
-	int contains(const Point &pPoint) const;
+	int _contains(const Point &pPoint) const;
 
 	/**
 	 * checks if a third point (p3) is a clockwise or counter-clockwise turn from the two
@@ -53,7 +53,7 @@ private:
 	 * @return an integer: Three points are a counter-clockwise turn if ccw > 0, clockwise if
  	 *	ccw < 0, and collinear if ccw = 0
 	 */
-	static int ccw(const Point &p1, const Point &p2, const Point &p3);
+	static int _ccw(const Point &p1, const Point &p2, const Point &p3);
 
 	/**
 	 * returns the distance between two points;
@@ -61,14 +61,14 @@ private:
 	 * @param b second point
 	 * @return an integer value of the distance between the points.
 	 */
-	static int sqrDist(const Point *a, const Point *b);
+	static int _sqrDist(const Point *a, const Point *b);
 
 	/**
 	 * simple loop to initialize an array with nullptr.
 	 * @param pPoint the array to initialize
 	 * @param size the size of the array.
 	 */
-	void initArrayOfPnts(Point **pPoint, const int size);
+	void _initArrayOfPnts(Point **pPoint, const int size);
 
 
 public:

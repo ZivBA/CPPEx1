@@ -24,7 +24,7 @@ PointSet::PointSet(int const size)
 {
 	_pointArray = new Point *[size];
 	_currentCapacity = size;
-	initArrayOfPnts(_pointArray, _currentCapacity);
+	_initArrayOfPnts(_pointArray, _currentCapacity);
 }
 
 /**
@@ -76,13 +76,13 @@ std::string PointSet::toString()
  */
 bool PointSet::add(Point const &pnt)
 {
-	if (contains(pnt) != notFound)
+	if (_contains(pnt) != notFound)
 	{
 		return false;
 	}
 	if (_currentCapacity - _currentOccupancy == 1)
 	{
-		increaseCapacity();
+		_increaseCapacity();
 	}
 	_pointArray[_currentOccupancy++] = new Point(pnt);
 	return true;
@@ -97,15 +97,21 @@ bool PointSet::add(Point const &pnt)
 
 bool PointSet::remove(const Point &pnt)
 {
-	int res = contains(pnt);
-	if (res == notFound) return false;
+	int res = _contains(pnt);
+	if (res == notFound)
+	{
+		return false;
+	}
 	delete _pointArray[res];
 	if (res != _currentOccupancy - 1)
 	{
 		_pointArray[res] = _pointArray[_currentOccupancy - 1];
 	}
 	_currentOccupancy--;
-	if (_currentOccupancy < _currentCapacity / 2) decreaseCapacity();
+	if (_currentOccupancy < _currentCapacity / 2)
+	{
+		_decreaseCapacity();
+	}
 	return true;
 
 
@@ -125,14 +131,15 @@ int PointSet::size() const
  * @param pPoint point to search for.
  * @return index of the point in the backing array or "notFound" flag (-1);
  */
-int PointSet::contains(const Point &pPoint) const
+int PointSet::_contains(const Point &pPoint) const
 {
 	for (int i = 0; i < _currentOccupancy; i++)
 	{
 		if (_pointArray[i] == nullptr)
 		{
 			continue;
-		} else if (*_pointArray[i] == &pPoint)
+		}
+		else if (*_pointArray[i] == &pPoint)
 		{
 			return i;
 		}
@@ -144,12 +151,12 @@ int PointSet::contains(const Point &pPoint) const
  * private method used for dynamic resizing of the backing array. doubles the capacity of the
  * set and copies the point pointers from the current array to the new one.
  */
-void PointSet::increaseCapacity()
+void PointSet::_increaseCapacity()
 {
 	_currentCapacity = _currentCapacity * 2;
 
 	Point **newArray = new Point *[_currentCapacity];
-	initArrayOfPnts(newArray, _currentCapacity);
+	_initArrayOfPnts(newArray, _currentCapacity);
 
 	std::swap_ranges(_pointArray, _pointArray + _currentOccupancy, newArray);
 
@@ -162,11 +169,11 @@ void PointSet::increaseCapacity()
  * private method used for dynamic resizing of the backing array. halves the capacity of the
  * set and copies the point pointers from the current array to the new one.
  */
-void PointSet::decreaseCapacity()
+void PointSet::_decreaseCapacity()
 {
 	_currentCapacity = _currentCapacity / 2;
 	Point **newArray = new Point *[_currentCapacity];
-	initArrayOfPnts(newArray, _currentCapacity);
+	_initArrayOfPnts(newArray, _currentCapacity);
 	std::swap_ranges(_pointArray, _pointArray + _currentOccupancy, newArray);
 
 	delete[] _pointArray;
@@ -209,7 +216,7 @@ bool PointSet::operator==(const PointSet &oPntSt) const
 	}
 	for (int i = 0; i < this->size(); i++)
 	{
-		if (_pointArray[i] != nullptr && oPntSt.contains(*_pointArray[i]) == notFound)
+		if (_pointArray[i] != nullptr && oPntSt._contains(*_pointArray[i]) == notFound)
 		{
 			return false;
 		}
@@ -238,7 +245,7 @@ PointSet PointSet::operator-(const PointSet &oPntSt) const
 	for (int i = 0; i < _currentOccupancy; i++)
 	{
 
-		if (_pointArray[i] != nullptr && oPntSt.contains(*_pointArray[i]) == notFound)
+		if (_pointArray[i] != nullptr && oPntSt._contains(*_pointArray[i]) == notFound)
 		{
 			newSet.add(*_pointArray[i]);
 		}
@@ -257,7 +264,7 @@ PointSet PointSet::operator&(const PointSet &oPntSt) const
 	for (int i = 0; i < _currentOccupancy; i++)
 	{
 
-		if (oPntSt.contains(*_pointArray[i]) != notFound)
+		if (oPntSt._contains(*_pointArray[i]) != notFound)
 		{
 			newSet.add(*_pointArray[i]);
 		}
@@ -275,8 +282,8 @@ PointSet PointSet::operator&(const PointSet &oPntSt) const
 bool PointSet::polarAngleComparator(const Point *a, const Point *b)
 {
 
-	int order = ccw(_anchPnt, *a, *b);
-	return order == 0 ? sqrDist(&_anchPnt, a) < sqrDist(&_anchPnt, b) : order < 0;
+	int order = _ccw(_anchPnt, *a, *b);
+	return order == 0 ? _sqrDist(&_anchPnt, a) < _sqrDist(&_anchPnt, b) : order < 0;
 }
 
 /**
@@ -288,8 +295,8 @@ bool PointSet::polarAngleComparator(const Point *a, const Point *b)
 
 bool PointSet::xyComparator(const Point *a, const Point *b)
 {
-	return a->get_xCord() < b->get_xCord() ? true :
-	       a->get_xCord() == b->get_xCord() ? a->get_yCord() < b->get_yCord() : false;
+	return a->getXcord() < b->getXcord() ? true :
+	       a->getXcord() == b->getXcord() ? a->getYcord() < b->getYcord() : false;
 }
 
 /**
@@ -298,9 +305,9 @@ bool PointSet::xyComparator(const Point *a, const Point *b)
  * @param b second point
  * @return an integer value of the distance between the points.
  */
-int PointSet::sqrDist(const Point *a, const Point *b)
+int PointSet::_sqrDist(const Point *a, const Point *b)
 {
-	int dx = a->get_xCord() - b->get_xCord(), dy = a->get_yCord() - b->get_yCord();
+	int dx = a->getXcord() - b->getXcord(), dy = a->getYcord() - b->getYcord();
 	return dx * dx + dy * dy;
 }
 
@@ -314,10 +321,10 @@ int PointSet::sqrDist(const Point *a, const Point *b)
 * @return an integer: Three points are a counter-clockwise turn if ccw > 0, clockwise if
 *	ccw < 0, and collinear if ccw = 0
 */
-int PointSet::ccw(const Point &p1, const Point &p2, const Point &p3)
+int PointSet::_ccw(const Point &p1, const Point &p2, const Point &p3)
 {
-	return ((p2.get_yCord() - p1.get_yCord()) * (p3.get_xCord() - p1.get_xCord()) -
-	        (p2.get_xCord() - p1.get_xCord()) * (p3.get_yCord() - p1.get_yCord()));
+	return ((p2.getYcord() - p1.getYcord()) * (p3.getXcord() - p1.getXcord()) -
+	        (p2.getXcord() - p1.getXcord()) * (p3.getYcord() - p1.getYcord()));
 
 
 }
@@ -378,12 +385,13 @@ PointSet *PointSet::convexSort()
 	//swap points[1] with the point with lowest y-coordinate;
 	for (int i = 2; i < N + 1; i++)
 	{
-		if (points[i]->get_yCord() < points[1]->get_yCord())
+		if (points[i]->getYcord() < points[1]->getYcord())
 		{
 			std::swap(points[i], points[1]);
-		} else if (points[i]->get_yCord() == points[1]->get_yCord())
+		}
+		else if (points[i]->getYcord() == points[1]->getYcord())
 		{
-			if (points[i]->get_xCord() < points[1]->get_xCord())
+			if (points[i]->getXcord() < points[1]->getXcord())
 			{
 				std::swap(points[i], points[1]);
 
@@ -401,15 +409,17 @@ PointSet *PointSet::convexSort()
 	int M = 1;
 	for (int i = 2; i <= N; i++)
 	{
-		while (ccw(*points[M - 1], *points[M], *points[i]) >= 0)
+		while (_ccw(*points[M - 1], *points[M], *points[i]) >= 0)
 		{
 			if (M > 1)
 			{
 				M--;
-			} else if (i == N)
+			}
+			else if (i == N)
 			{
 				break;
-			} else
+			}
+			else
 			{
 				i++;
 			}
@@ -434,7 +444,7 @@ PointSet *PointSet::convexSort()
  * @param pPoint the array to initialize
  * @param size the size of the array.
  */
-void PointSet::initArrayOfPnts(Point **pPoint, const int size)
+void PointSet::_initArrayOfPnts(Point **pPoint, const int size)
 {
 	for (int i = 0; i < size; i++)
 	{

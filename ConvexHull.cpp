@@ -8,6 +8,9 @@
 
 int MINIMAL_SIZE_FOR_CONVEX = 3;
 
+/**
+ * this. is. MAINFILE!!!!!!!
+ */
 int main()
 {
 
@@ -39,7 +42,8 @@ int main()
 	if (preConvexSet.size() < MINIMAL_SIZE_FOR_CONVEX)
 	{
 		postConvex = &preConvexSet;
-	} else
+	}
+	else
 	{
 		postConvex = preConvexSet.convexSort();
 	}

@@ -100,7 +100,7 @@ double Point::norm() const
 	 * getters for x and y coordinates.
 	 * @return
 	 */
-int Point::get_xCord() const
+int Point::getXcord() const
 {
 	return _xCord;
 }
@@ -109,7 +109,7 @@ int Point::get_xCord() const
 	 * getters for x and y coordinates.
 	 * @return
 	 */
-int Point::get_yCord() const
+int Point::getYcord() const
 {
 	return _yCord;
 }

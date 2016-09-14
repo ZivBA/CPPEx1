@@ -38,13 +38,13 @@ public:
 	 * getters for x and y coordinates.
 	 * @return
 	 */
-	int get_xCord() const;
+	int getXcord() const;
 
 	/**
 	 * getters for x and y coordinates.
 	 * @return
 	 */
-	int get_yCord() const;
+	int getYcord() const;
 
 	/**
 	 * copy ctor
